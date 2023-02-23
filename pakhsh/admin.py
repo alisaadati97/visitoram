@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import *
 from supermarket.models import *
 import decimal
+from django.utils.html import format_html
 
 # Register your models here.
 # from django.contrib.admin.models import LogEntry
@@ -14,10 +15,18 @@ class ProductTypeAdmin(admin.ModelAdmin):
 admin.site.register(ProductType, ProductTypeAdmin)
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name','description','supplier','get_price','address')
+    list_display = ( 'image_tag', 'name','description','supplier','get_price','address')
     list_filter = ('type',)
     readonly_fields = ('number','supplier',)
     actions = ['add_to_basket']
+    def image_tag(self, obj):
+        try:
+            return format_html('<img src="{}" />'.format(obj.image.url))
+        except:
+            print('except')
+            return 'none'
+
+    image_tag.short_description = 'Image'
     def has_group(self,request):
         if len(request.user.groups.values()) == 0:
             return False

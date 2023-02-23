@@ -17,12 +17,14 @@ class Product(models.Model):
     description = models.CharField(max_length=100,blank=True,null=True)
 
     unit_price = models.PositiveIntegerField(blank=True,null=True)
-    moq = models.PositiveIntegerField(blank=True,null=True)
+    moq = models.PositiveIntegerField(blank=True,null=True,default=1)
 
     type = models.ForeignKey(ProductType , on_delete=models.CASCADE,blank=True,null=True)
     supplier = models.ForeignKey(User , on_delete=models.CASCADE,blank=True,null=True)
     address =  models.CharField(max_length=100,blank=True,null=True)
     
+    image = models.ImageField(upload_to='',null=True)
+
     def __str__(self):
         return f'{self.supplier} - {self.name}'
     class Meta:

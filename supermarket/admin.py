@@ -2,12 +2,22 @@ from django.contrib import admin
 
 from .models import *
 # Register your models here.
+class ProductFilter(admin.SimpleListFilter):
+    title = 'product' 
+    parameter_name = 'product'
+    def lookups(self, request, model_admin):
+        products = Product.objects.filter(supplier__username = request.user.username)
+        return [(p.id,p) for p in products]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product__id=self.value())
 
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('number','date','author','product','get_supplier','quantity','get_total_price','is_sent','is_recieved','is_done')
     list_editable = ('quantity',)
-    list_filter = ('product','is_done','is_sent')
-    readonly_fields = ('number','date','author',)
+    list_filter = (ProductFilter,'is_done','is_sent','is_recieved')
+    readonly_fields = ('number','date','author','is_sent','is_recieved')
     def get_supplier(self,obj):
         return obj.product.supplier
     
@@ -18,6 +28,8 @@ class OrderItemAdmin(admin.ModelAdmin):
             return None
 
     def get_readonly_fields(self, request, obj=None):
+        if obj == None:
+            return self.readonly_fields
         if request.user.groups.values()[0]['name'] == 'supermarket':
             if not obj.is_done:
                 return ('number','date','author','is_sent','is_recieved',)

@@ -1,6 +1,7 @@
 from django.db import models
 from pakhsh.models import Product
 from user.models import User
+from django.core.exceptions import ValidationError
 
 import jdatetime
 
@@ -30,8 +31,15 @@ class OrderItem(models.Model):
     
     class Meta:
         ordering = ('-id',)
-
+    def clean(self, exclude=None):
+        if self.product.moq != None and self.quantity < self.product.moq :
+            raise ValidationError({'quantity': f"Not A Valid Quantity, should be at least {self.product.moq} items"})
     def save(self, *args, **kwargs):
+        print()
+        
         if not self.id:
-            self.number = OrderItem.objects.all()[0].number + 1
+            try:
+                self.number = OrderItem.objects.all()[0].number + 1
+            except:
+                self.number = 1
         super(OrderItem, self).save(*args, **kwargs)

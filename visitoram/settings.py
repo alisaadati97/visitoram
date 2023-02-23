@@ -128,3 +128,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #create customized user
 AUTH_USER_MODEL = 'user.User'
+STATIC_ROOT = '/home/alisaadati/visitoram/static'
+MEDIA_ROOT = '/home/alisaadati/visitoram/media'
+MEDIA_URL  = 'media/'
